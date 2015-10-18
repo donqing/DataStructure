@@ -1,0 +1,85 @@
+package com.data.chapter9;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JApplet;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+/**
+ * 骑士环游
+ * @author zhangqd
+ *
+ */
+public class KnightTourApp extends JApplet {
+	
+	private KnightTourModel model = new KnightTourModel();
+	
+	private PaintKnightTour paintKnightTour = new PaintKnightTour();
+	
+	private JTextField jtfRow = new JTextField(2);
+	private JTextField jtfColumn = new JTextField(2);
+	private JButton jbtSearch = new JButton("Search");
+	
+	public KnightTourApp(){
+		JPanel panel = new JPanel();
+		panel.add(new JLabel("Specify a starting position ,row: "));
+		panel.add(jtfRow);
+		panel.add(new JLabel("column: "));
+		panel.add(jtfColumn);
+		panel.add(jbtSearch);
+		add(paintKnightTour,BorderLayout.CENTER);
+		add(panel,BorderLayout.SOUTH);
+		jbtSearch.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int position = Integer.parseInt(jtfRow.getText())*8
+						+Integer.parseInt(jtfColumn.getText());
+				paintKnightTour.displayPath(model.getHamiltonianPath(position));
+			}
+			
+		});
+		
+	}
+	
+	private static class PaintKnightTour extends JPanel{
+		private List<Integer> path;
+		public PaintKnightTour(){
+			setBorder(BorderFactory.createLineBorder(Color.BLACK,1));
+		}
+		public void displayPath(List<Integer> path){
+			this.path = path;
+			repaint();
+		}
+		protected void paintComponent(Graphics g){
+			super.paintComponent(g);
+			//Display horizontal lines
+			for(int i=0;i<8;i++)
+				g.drawLine(0,i*getWidth()/8,  getWidth(), i*getWidth()/8);
+			//Display vertical lines
+			for(int i=0;i<8;i++)
+				g.drawLine(i*getWidth()/8, 0, (int)i*getWidth()/8,getHeight() );
+			if(path==null)return;
+			for(int i=0;i<path.size()-1;i++){
+				int u = path.get(i);
+				int v = path.get(i+1);
+				//Knight moves from u and v .Draw a line to connect u and v
+				g.drawLine((u%8)*getWidth()/8+getWidth()/16, 
+						(u/8)*getHeight()/8+getHeight()/16,
+						(v%8)*getWidth()/8+getWidth()/16, 
+						(v%8)*getHeight()/8+getHeight()/16);
+				
+			}
+			
+		}
+	}
+}
